@@ -1,0 +1,174 @@
+Mikołaj Zapotoczny
+Przecięcia zer
+19.11.2019
+
+
+
+KOD ŹRÓDŁOWY:
+
+
+#include <stdio.h>
+                                                  /* deklaracja stałych symbolicznych wynikających z treści zadania */
+#define KONIEC 99                                 /* stała oznaczająca warunek stopu */
+#define MAX_POPR 10                               /* stała oznaczająca maksymalną poprawną wartość pojedyńczej danej z pliku */
+#define MIN_POPR -10                              /* stała oznaczająca minimalną poprawną wartość pojedyńczej danej z pliku */
+#define MAX_CZ 14                                 /* stała oznaczająca maksymalną ilość przecięć zera, aby można było uznać wyniki za poprawne */
+#define MIN_CZ 8                                  /* stała oznaczająca minimalną ilość przecięć zera, aby można było uznać wyniki za poprawne */
+#define GRUPA 99                                  /* stała oznaczająca warunek końca grupy */
+
+
+int main()
+{
+float poj_dana;                                    /* zmienna zmiennoprzecinkowa, która jest zmienną pomocniczą do spawdzania kolejnych danych z pliku, przechowuje ostatnio pobraną daną */
+float dana_poprz=0;                                /* zmienna zmiennoprzecinkowa, która jest zmienną pomocniczą do spawdzania kolejnych danych z pliku, przechowuje poprzednio pobraną daną */
+int przec=0;                                       /* zmienna zliczająca ilość przecięć */
+int ilosc_przesc=0;                                /* zmienna zliczająca ilośc przejść */
+                                                   /* na początku zmiennym przypisuję zero ze względu na pamięć śmieciową */
+
+while(KONIEC!=poj_dana)                            /* pętla while, której warunkiem stopu jest znalezienie pojedyńczej danej równej stałej KONIEC */
+{
+    scanf("%f",&poj_dana);                         /* pobieranie danych i przypisywanie ich do zmiennej poj_dana */
+    
+    if(poj_dana<=MAX_POPR && poj_dana>=MIN_POPR)   /* instrukcja warunkowa, która ma za zadanie sprawdzić, czy pobrana dana jest zawarta w przedziale z treści zadania (od -10 do 10) */
+    {
+        if(poj_dana!=0)                            /* sprawdzenie czy dana jest różna od zera (jeżeli tak jest to zostaje pominięta w tej pętli, bo 0 i tak nie daje przecięcia) */
+        {
+         if(poj_dana*dana_poprz<0)                 /* jeżeli dana jest różna od zera to wykonujemy kolejnego mnożenie danej przez daną poprzednią */
+         {                                         /* dla pierwszej danej dana_poprz=0 stąd zostanie to pominięte, aby uniknąć dodatkowego jednego przejcięcia */
+            przec++;                               /* kiedy następuje zmiana znaku zmiennej pomocniczej to do zmiennej przec zostaje dodane 1 */
+         } 
+         dana_poprz=poj_dana;                      /* to przypisanie pozwala na bierząco sprawdzać kolejne dwie pary cyfr, bo poj_dana jest wprowadzana,*/ 
+        }                                                   /* a dana_poprz jest zawsze zmienną wprowadzoną o jeden krok wcześniej */
+    }
+    ilosc_przesc++;                                /* po każdym przejściu zmienna ilosc_przejsc zostaje zwiększona o 1, tak aby móc skończyć grupę danych przy 99 przejściach */
+    if (ilosc_przesc==GRUPA)                       /* po 99 danych wyniki pacjenta zostaną sprawdzone */
+    {
+        if(przec>=MIN_CZ && przec<=MAX_CZ)         /* sprawdzenie czy ilość przecięć zera jest w poprawnym przedziale */
+        {
+            printf("Puls %d - poprawny \n",przec);
+        }
+        else
+        {
+            printf("Puls %d - niepoprawny! \n",przec);
+        }
+        ilosc_przesc=0;                            /* zmienne tutaj są przygotowywane na rozpoczęcie pętli od nowa również po to, aby uniknąć błędów wynikających z danych śmieciowych */
+        dana_poprz=0;                                       /* wynikających z wcześniejszego użytkowania danego fragmentu pamięci*/ 
+        przec=0;
+    }
+
+}
+
+return 0;
+}
+
+
+/*
+w konsoli po uruchomieniu programu należy napisać: cut -d ' ' -f 2- przeciecia_zera1 | ./a.out
+                                                                    przeciecia_zera2
+-d separator, czyli u nas po spacji (' ')
+-f ciągi znaków od drugiego do końca każdej linii (2-)
+przeciecia_zera1/przeciecia_zera2 - nazwy plików z których bierzemy dane
+
+jest to polecenie dla danych dołączonych do opisu ćwiczenia
+*/
+
+
+
+
+
+
+TESTY:
+
+
+1. Testy oparte na własnych spreparowanych danych (korzystam z wpisu do terminala: ./a.out < test1.txt)
+
+
+
+-Sprawdzenie warunku stopu, oraz sprawdzenie zachowania programu przy wielu zerach pod rząd.
+
+ Wprowadziłem dane z pliku: test1.txt (plik ten zawiera 99 zer i liczbę 99 na końcu)
+ Nie wyświetlił się żaden błąd. Program wyświetlił komunikat: Puls 0 - niepoprawny!.
+ Warunek stopu zadziałał poprawnie. Program zachował się poprawnie przy wprowadzenie wielu zer pod rząd.
+
+
+
+-Sprawdzenie działania zliczania przecięć z uwzględnieniem pomijanaia zer.
+
+ Wprowadziłem dane z pliku: test2.txt (plik zawiera ciąg: 1, -1, 0, 0, 99 zer, 99)
+ Nie wyświetlił się żaden błąd. Program wyświetlił komunikat: Puls 1 - niepoprawny!.
+ Program poprawnie zliczył jedno przecięcie zera.
+
+ Wprowadziłem dane z pliku: test3.txt (plik zawiera ciąg: 1, 0, -1, 0, 0, 94 zera, 99)
+ Nie wyświetlił się żaden błąd. Program wyświetlił komunikat: Puls 1 - niepoprawny!.
+ Program poprawnie zliczył jedno przecięcie zera.
+
+ Wprowadziłem dane z pliku: test4.txt (plik zawiera ciąg: 1, 0, 0, -1, 0, 94 zera, 99))
+ Nie wyświetlił się żaden błąd. Program wyświetlił komunikat: Puls 1 - niepoprawny!.
+ Program poprawnie zliczył jedno przecięcie zera.
+
+ Wprowadziłem dane z pliku: test5.txt (plik zawiera ciąg: 0, 1, 1, -1, 0, 94 zera, 99))
+ Nie wyświetlił się żaden błąd. Program wyświetlił komunikat: Puls 1 - niepoprawny!.
+ Program poprawnie zliczył jedno przecięcie zera.
+
+
+
+-Sprawdzenie przypadku kiedy teoretyczne przecięcie wypada na granicy 99 danych.
+
+ Wprowadziłem dane z pliku: test6.txt (plik zawiera ciąg: 99 jedynek, 99 minus jedynek, 99)
+ Nie wyświetlił się żaden błąd. Program wyświetlił komunikat:
+ Puls 0 - niepoprawny!
+ Puls 0 - niepoprawny!
+ Program poprawnie nie zliczył przecięcia gdy teoretyczne występowało ono na granicy grupy 99 danych.
+
+
+
+-Sprawdzenie działania poprawności danych wejściowych (przedział od -10 do 10, dane zmiennoprzecinkowe) oraz poprawności wyświetlanych komunikatów końcowych.
+
+ Wprowadziłem dane z pliku: test7.txt (plik zawiera ciąg: 1, 0, -1.38, 10, -10, 1.333, 1, -200, 7.5, 4, -1, 200, 11, -2, 11.5, -1, 3, -11, -4, -11.5, 1, potem 70 jedynek, 99)
+ Nie wyświetlił się żaden błąd. Program wyświetlił komunikat: Puls 8 - poprawny!.
+ Program poprawnie zliczył przecięcia uwzgledniając przedział poprawności danych. Wcześniej poprawnie działały komunikaty na niepoprawne tętno, tutaj również komunikat na tętno poprawne działa poprawnie.
+
+
+
+2. Testy oparte na plikach pobranych na stronie kursu.
+
+-Sprawdzenie danych z pliku: przeciecia_zera1.txt, przy pomocy komendy wpisywanej z terminala: cut -d ' ' -f 2- przeciecia_zera1 | ./a.out
+ Wyświetlił się komunikat:
+ Puls 11 - poprawny
+ Puls 5 - niepoprawny!
+ Puls 10 - poprawny
+ Puls 12 - poprawny
+ Puls 12 - poprawny
+ Puls 12 - poprawny
+ Puls 12 - poprawny
+ Puls 13 - poprawny
+ Puls 18 - niepoprawny!
+ Puls 11 - poprawny
+Widzimy, że poprawnie działają komunikaty na poprawne i niepoprawne tętno, oraz widzimy, że program działa poprawnie dla danych z pliku pierwszego.
+
+
+-Sprawdzenie danych z pliku: przeciecia_zera2.txt, przy pomocy komendy wpisywanej z terminala: cut -d ' ' -f 2- przeciecia_zera2 | ./a.out
+ Wyświetlił się komunikat:
+ Puls 11 - poprawny
+ Puls 5 - niepoprawny!
+ Puls 10 - poprawny
+ Puls 12 - poprawny
+ Puls 12 - poprawny
+ Puls 12 - poprawny
+ Puls 12 - poprawny
+ Puls 13 - poprawny
+ Puls 18 - niepoprawny!
+ Puls 11 - poprawny
+Widzimy, że poprawnie działają komunikaty na poprawne i niepoprawne tętno, oraz widzimy, że program działa poprawnie dla danych również z pliku drugiego.
+
+
+3.Program został sprawdzony na komputerach diablo i panamit w taki sam sposób i nie było żadnych różnic. 
+
+
+WNIOSEK:
+Program działa poprawnie dla wszystkich poprawnych danych wejściowych.
+
+
+
+
+
